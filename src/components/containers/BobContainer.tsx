@@ -4,6 +4,7 @@ import Input from "../inputs/Input";
 import ContainerWrapper from "./ContainerWrapper";
 import Big from 'big.js';
 import { IconRocket } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 const BobContainer = () => {
   const { values, setFieldValue } = useFormikContext<typeof initialValues>();
@@ -11,6 +12,10 @@ const BobContainer = () => {
 
   const onBobPrivChange = (e: any) => {
     const bobPriv = parseFloat(e.target.value)
+    changeBobPriv(bobPriv)
+  }
+
+  const changeBobPriv = (bobPriv: number) => {
     setFieldValue('bob-priv', bobPriv)
     if (bobPriv) {
       const bobToAlice = Big(values['public-g']).pow(bobPriv).mod(values['public-n']).c.reduce((sum: string, num: number) => {
@@ -19,6 +24,10 @@ const BobContainer = () => {
       setFieldValue('bob-to-alice', parseFloat(bobToAlice))
     }
   }
+
+  useEffect(() => {
+    changeBobPriv(values['bob-priv'])
+  }, [values['public-g'], values['public-n']])
 
   return (
     <ContainerWrapper color={'none'}>

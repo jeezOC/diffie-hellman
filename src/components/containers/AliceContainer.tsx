@@ -5,6 +5,7 @@ import ContainerWrapper from "./ContainerWrapper";
 import { initialValues } from "../../App";
 import Big from 'big.js';
 import { IconPlant } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 const AliceContainer = () => {
   const { values, setFieldValue } = useFormikContext<typeof initialValues>();
@@ -12,6 +13,10 @@ const AliceContainer = () => {
 
   const onAlicePrivChange = (e: any) => {
     const alicePriv = parseFloat(e.target.value)
+    changeAlicePriv(alicePriv)
+  }
+
+  const changeAlicePriv = (alicePriv: number) => {
     setFieldValue('alice-priv', alicePriv)
     if (alicePriv) {
       const aliceToBob = Big(values['public-g']).pow(alicePriv).mod(values['public-n']).c.reduce((sum: string, num: number) => {
@@ -24,12 +29,16 @@ const AliceContainer = () => {
     }
   }
 
+  useEffect(() => {
+    changeAlicePriv(values['alice-priv'])
+  }, [values['public-g'], values['public-n']])
+
 
   return (
     <ContainerWrapper color={'none'}>
       <h3 className="text-3xl text-center">Alice</h3>
       <ContainerWrapper color={color} >
-      <IconPlant className="text-rose-300" size={75} />
+        <IconPlant className="text-rose-300" size={75} />
       </ContainerWrapper>
       <ContainerWrapper color={color}>
         <Input name="alice-priv" label='Alice Priv:' type="number" onChange={onAlicePrivChange} colorAccent={color} />
